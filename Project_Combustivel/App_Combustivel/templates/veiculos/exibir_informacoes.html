@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações do Veículo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Cor de fundo mais suave */
+        }
+
+        .container {
+            max-width: 800px; /* Largura máxima da container */
+            margin: 20px auto; /* Centraliza o container */
+            padding: 20px; /* Adiciona espaçamento interno */
+            background-color: #fff; /* Fundo branco para destaque */
+            border-radius: 8px; /* Bordas arredondadas */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra leve */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333; /* Cor do texto do cabeçalho */
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #bd0707; 
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Transição suave */
+        }
+
+        button:hover {
+            background-color: #bd0707; 
+        }
+
+        .filter-form {
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Centraliza verticalmente */
+            margin-bottom: 20px;
+            gap: 10px; /* Espaçamento entre os inputs e botões */
+        }
+
+        .filter-form label {
+            font-weight: bold;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse; /* Remove o espaçamento entre as bordas */
+            margin-top: 20px;
+        }
+
+        .info-table th, .info-table td {
+            padding: 12px;
+            border: 1px solid #dddddd; /* Bordas leves */
+            text-align: center;
+        }
+
+        .info-table th {
+            background-color: #f2f2f2; /* Cor de fundo para o cabeçalho */
+            color: #333; /* Cor do texto do cabeçalho */
+        }
+
+        .info-table tr:nth-child(even) {
+            background-color: #f9f9f9; /* Fundo alternado para linhas pares */
+        }
+
+        .info-table tr:nth-child(odd) {
+            background-color: #ffffff; /* Fundo alternado para linhas ímpares */
+        }
+
+        .loading {
+            display: none; /* Oculta o spinner por padrão */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Fundo semi-transparente */
+            z-index: 9999; /* Mantém o spinner acima de tudo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estilos para o spinner */
+        .loading svg polyline {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .loading svg polyline#back {
+            stroke: #ff4d5033;
+        }
+
+        .loading svg polyline#front {
+            stroke: #ff4d4f;
+            stroke-dasharray: 48, 144;
+            stroke-dashoffset: 192;
+            animation: dash_682 1.4s linear infinite;
+        }
+
+        @keyframes dash_682 {
+            72.5% {
+                opacity: 0;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Estilos para os botões */
+        .btn {
+            padding: 9px 15px;
+            background-color: #bd0707;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Efeito suave */
+        }
+
+    </style>
+
+    <script>
+        // Função para exibir o spinner
+        function showSpinner() {
+            document.getElementById("loading-spinner").style.display = "flex";
+        }
+
+        // Função para esconder o spinner
+        function hideSpinner() {
+            document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        // Adicionar eventos ao carregamento da página e formulários
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ao submeter formulários
+            const forms = document.querySelectorAll("form");
+            forms.forEach(form => {
+                form.addEventListener("submit", function() {
+                    showSpinner();  // Mostrar animação ao enviar formulários
+                });
+            });
+
+            // Ocultar o spinner quando a página carregar completamente
+            window.addEventListener("load", function() {
+                hideSpinner();  // Esconder animação após o carregamento
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <h2>Informações do Veículo: {{ veiculo.nome }} ({{ veiculo.placa }})</h2>
+
+        <!-- Formulário de filtro por data -->
+        <form method="GET" action="" class="filter-form">
+            <label for="data_inicio">Data Início:</label>
+            <input type="date" name="data_inicio" value="{{ data_inicio }}" required>
+            
+            <label for="data_fim">Data Fim:</label>
+            <input type="date" name="data_fim" value="{{ data_fim }}" required>
+            
+            <button type="submit">Filtrar</button>
+            <a href="{% url 'exibir_informacoes_veiculo' veiculo.id %}" class="btn clear-btn">Limpar Filtros</a>
+        </form>
+
+        <h2>Lista de Abastecimentos</h2>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Data do Abastecimento</th>
+                    <th>Quilometragem</th>
+                    <th>Quantidade Abastecida (L)</th>
+                    <th>Consumo (Km/L)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for abastecimento in abastecimentos %}
+                    <tr>
+                        <td>{{ abastecimento.data|date:"d/m/Y" }}</td>
+                        <td>{{ abastecimento.quilometragem }}</td>
+                        <td>{{ abastecimento.litros }} L</td>
+                        <td>{{ abastecimento.consumo }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhum abastecimento registrado para este veículo.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Carregando a animação de carregar -->
+        <div id="loading-spinner" class="loading">
+            <svg width="64px" height="48px">
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+            </svg>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'home' %}" class="btn clear-btn" style="background-color: #bd0707;">Página Inicial</a>
+    </div>
+
+    
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remover Veículo</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .usuarios-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+            text-align: left; /* Alinhamento à esquerda para a lista de veículos */
+        }
+
+        .usuarios-list li {
+            display: flex; /* Use flexbox para alinhar os itens na mesma linha */
+            justify-content: space-between; /* Distribui o espaço entre os itens */
+            align-items: center; /* Alinha os itens verticalmente */
+            margin: 10px 0;
+        }
+
+        .remove-btn {
+            background-color: #a72828; /* Cor de fundo do botão */
+            color: white; /* Cor do texto do botão */
+            padding: 10px 20px; /* Espaçamento interno do botão */
+            border-radius: 5px; /* Bordas arredondadas do botão */
+            border: none; /* Remove a borda padrão */
+            cursor: pointer; /* Cursor em forma de mão ao passar o mouse */
+            transition: background-color 0.3s; /* Transição suave ao passar o mouse */
+        }
+
+        .remove-btn:hover {
+            background-color: #bd0707; /* Cor do botão ao passar o mouse */
+        }
+
+        .messages {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .messages li {
+            margin: 5px 0;
+            color: red; /* Cor das mensagens */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Remover Veículo</h1>
+        <ul class="usuarios-list">
+            {% for veiculo in veiculos %}
+                <li>
+                    {{ veiculo.nome }} ({{ veiculo.placa }})
+                    <a class="remove-btn" href="{% url 'remover_veiculo' veiculo.id %}" onclick="return confirm('Tem certeza que deseja remover este veículo?');">Remover</a>
+                </li>
+            {% empty %}
+                <li>Nenhum veículo cadastrado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

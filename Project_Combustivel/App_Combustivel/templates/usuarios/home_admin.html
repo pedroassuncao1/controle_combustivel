@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Abastecimento</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.menu {
+    list-style-type: none;
+}
+
+.menu li {
+    margin: 10px 0;
+}
+
+.menu a, form {
+    text-decoration: none;
+    color: white;
+    background-color: #a72828;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.menu a:hover {
+    background-color: #bd0707;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Abastecimento</h1>
+        <ul class="menu">
+            <!-- Botão para cadastrar um novo veículo -->
+            <li><a href="{% url 'cadastrar_veiculo' %}">1. Cadastrar novo Veículo</a></li>
+    
+            <!-- Botão para listar os veículos para que o usuário escolha qual veículo irá adicionar dados de abastecimento -->
+            <li><a href="{% url 'listar_veiculos' %}">2. Cadastrar Abastecimento</a></li>
+        
+            <!-- Botão para remover veículos existentes -->
+            <li><a href="{% url 'remover_veiculo_view' %}">3. Remover um veículo</a></li>
+
+            
+            <li><a href="{% url 'listar_veiculos_informacoes' %}">4. Exibir informações de um veículo</a></li>
+
+            <li><a href="{% url 'grafico_consumo' %}">5. Gráfico</a></li>
+            
+            <li><a href="{% url 'mais_opcoes' %}">6. Mais opções</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: #a72828; color: white; padding: 5px 20px; border-radius: 5px; width: 100%; border: none; cursor: pointer; transition: background-color 0.3s;">
+                        7. Sair
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecione um Veículo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa; /* Fundo suave */
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff; /* Fundo branco para a caixa do conteúdo */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            border-radius: 8px; /* Cantos arredondados */
+        }
+
+        h1 {
+            text-align: center; /* Centraliza o título */
+            color: #bd0707; /* Cor do título */
+            margin-bottom: 20px; /* Espaço abaixo do título */
+        }
+
+        ul {
+            list-style-type: none; /* Remove os marcadores da lista */
+            padding: 0; /* Remove o padding padrão */
+        }
+
+        ul li {
+            margin-bottom: 10px; /* Espaço entre os itens da lista */
+        }
+
+        a {
+            color: #a72828; /* Cor dos links */
+            text-decoration: none; /* Remove o sublinhado */
+            font-weight: bold; /* Deixa o texto mais forte */
+            padding: 10px; /* Adiciona um espaço interno */
+            border: 1px solid transparent; /* Adiciona borda transparente para efeito de hover */
+            border-radius: 5px; /* Bordas arredondadas */
+            transition: background-color 0.3s, border-color 0.3s; /* Transição suave para o hover */
+        }
+
+        a:hover {
+            text-decoration: underline; /* Adiciona sublinhado no hover */
+            background-color: #e7f1ff; /* Fundo suave no hover */
+            border-color: #bd0707; /* Borda azul no hover */
+        }
+
+        /* Estilo para a mensagem de "Nenhum veículo cadastrado" */
+        .no-vehicles {
+            text-align: center; /* Centraliza a mensagem */
+            color: #dc3545; /* Cor de alerta */
+            font-weight: bold; /* Deixa o texto mais forte */
+            margin-top: 20px; /* Espaço acima da mensagem */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Selecione um Veículo</h1>
+        <ul>
+            {% for veiculo in veiculos %}
+                <li>
+                    <a href="{% url 'exibir_informacoes_veiculo' veiculo.id %}">{{ veiculo.nome }} ({{ veiculo.placa }})</a>
+                </li>
+            {% empty %}
+                <li class="no-vehicles">Nenhum veículo cadastrado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

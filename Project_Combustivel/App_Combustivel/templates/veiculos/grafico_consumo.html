@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Consumo de Combustível</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chart-container h2 {
+            font-size: 2em;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .vehicle-info {
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        .vehicle-info span {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                width: 95%;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        form button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #2ecc71;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        form button:hover {
+            background-color: #27ae60;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 30px auto;
+        }
+
+        /* Estilos para o spinner */
+        .loading svg polyline {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        }
+
+        .loading svg polyline#back {
+        fill: none;
+        stroke: #ff4d5033;
+        }
+
+        .loading svg polyline#front {
+        fill: none;
+        stroke: #ff4d4f;
+        stroke-dasharray: 48, 144;
+        stroke-dashoffset: 192;
+        animation: dash_682 1.4s linear infinite;
+        }
+
+        @keyframes dash_682 {
+        72.5% {
+            opacity: 0;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+        }
+
+        /* Control the visibility of the spinner */
+        #loading-spinner {
+        display: none; /* Hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 9999; /* Ensures it stays above all content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+
+    </style>
+
+    <script>
+
+        // Função para exibir o spinner
+        function showSpinner() {
+            document.getElementById("loading-spinner").style.display = "flex";
+        }
+
+        // Função para esconder o spinner
+        function hideSpinner() {
+            document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        // Adicionar eventos ao carregamento da página e formulários
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ao submeter formulários
+            const forms = document.querySelectorAll("form");
+            forms.forEach(form => {
+                form.addEventListener("submit", function() {
+                    showSpinner();  // Mostrar animação ao enviar formulários
+                });
+            });
+
+            // Ocultar o spinner quando a página carregar completamente
+            window.addEventListener("load", function() {
+                hideSpinner();  // Esconder animação após o carregamento
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+    <h1>Gráfico de Consumo de Combustível por Veículo</h1>
+
+    <!-- Formulário para o filtro de data -->
+    <form method="GET">
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <!-- Container para o gráfico -->
+    <div class="chart-container">
+        <h2>Gráfico de Consumo</h2>
+
+        <!-- Exibir informações de consumo por veículo -->
+        {% for consumo in consumo_veiculos %}
+        <div class="vehicle-info">
+            <span>Veículo:</span> {{ consumo.veiculo.nome }} <br>
+            <span>Placa:</span> {{ consumo.veiculo.placa }} <br>
+            <span>Total de combustível consumido:</span> {{ consumo.litros }} litros
+        </div>
+        {% endfor %}
+
+        <img src="data:image/png;base64,{{ imagem_grafico }}" alt="Gráfico de Consumo">
+
+        <!-- Carregando a animação de carrregar -->
+        <div id="loading-spinner" class="loading">
+            <svg width="64px" height="48px">
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+            </svg>
+        </div>
+
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>Gráfico gerado automaticamente para análise de consumo.</p>
+    </div>
+</body>
+</html>

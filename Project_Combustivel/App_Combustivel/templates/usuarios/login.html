@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Registro de Abastecimento</title>
+    <style>
+        /* Estilo global */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://www.cobli.co/wp-content/uploads/2019/08/controle-de-abastecimento-frota-scaled.jpeg');
+            background-size: cover;
+            background-position: center;
+            position: relative; /* Adicionando posição relativa */
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3); /* Escurecimento */
+            z-index: 1; /* Coloca a sobreposição acima da imagem */
+        }
+
+        body > * {
+            position: relative; /* Garante que o conteúdo fique acima da sobreposição */
+            z-index: 2; /* Conteúdo acima da sobreposição */
+        }
+        
+        /* Container principal */
+        .container {
+            background-color: rgba(255, 255, 255, 0.7); /* Transparência no fundo */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        /* Cabeçalho */
+        h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        /* Linha decorativa no título */
+        h2::after {
+            content: '';
+            width: 30px;
+            height: 3px;
+            background-color: #a72828;
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Formulário */
+        form {
+            text-align: left;
+        }
+
+        /* Estilo dos inputs */
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+        }
+
+        /* Botão de login */
+        button[type="submit"] {
+            width: 100%;
+            background-color: #a72828; 
+            color: white;
+            border: none;
+            padding: 12px 0;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #bd0707;  
+        }
+
+        /* Links e mensagens */
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        /* Mensagem de erro */
+        p.error-message {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Detalhe decorativo do formulário */
+        .container::before {
+            content: '';
+            width: 100%;
+            height: 5px;
+            background-color: #a72828; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* Ajustes de layout para mobile */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
+
+
+        /* Estilos para o spinner */
+        .loading svg polyline {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        }
+
+        .loading svg polyline#back {
+        fill: none;
+        stroke: #ff4d5033;
+        }
+
+        .loading svg polyline#front {
+        fill: none;
+        stroke: #ff4d4f;
+        stroke-dasharray: 48, 144;
+        stroke-dashoffset: 192;
+        animation: dash_682 1.4s linear infinite;
+        }
+
+        @keyframes dash_682 {
+        72.5% {
+            opacity: 0;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+        }
+
+        /* Control the visibility of the spinner */
+        #loading-spinner {
+        display: none; /* Hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 9999; /* Ensures it stays above all content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+    </style>
+
+    <script>
+        // Função para exibir o spinner
+        function showSpinner() {
+            document.getElementById("loading-spinner").style.display = "flex";
+        }
+
+        // Função para esconder o spinner
+        function hideSpinner() {
+            document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        // Adicionar eventos ao carregamento da página e formulários
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ao submeter formulários
+            const forms = document.querySelectorAll("form");
+            forms.forEach(form => {
+                form.addEventListener("submit", function() {
+                    showSpinner();  // Mostrar animação ao enviar formulários
+                });
+            });
+
+            // Ocultar o spinner quando a página carregar completamente
+            window.addEventListener("load", function() {
+                hideSpinner();  // Esconder animação após o carregamento
+            });
+        });
+
+        
+    </script>
+
+
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+        
+        <!-- Exibe mensagem de erro personalizada -->
+        {% if form.non_field_errors %}
+            <p class="error-message">Usuário e/ou senha incorreto(s).</p>
+        {% endif %}
+
+        <!-- Carregando a animação de carrregar -->
+        <div id="loading-spinner" class="loading">
+            <svg width="64px" height="48px">
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+            </svg>
+        </div>
+        
+    </div>
+</body>
+</html>

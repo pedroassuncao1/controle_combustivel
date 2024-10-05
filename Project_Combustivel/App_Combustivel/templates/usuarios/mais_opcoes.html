@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Abastecimento</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.menu {
+    list-style-type: none;
+}
+
+.menu li {
+    margin: 10px 0;
+}
+
+.menu a, form {
+    text-decoration: none;
+    color: white;
+    background-color: #a72828;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.menu a:hover {
+    background-color: #bd0707;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Abastecimento</h1>
+        <ul class="menu">
+            <li><a href="{% url 'trocar_senha' %}">1. Trocar Senha</a></li>
+            <li><a href="{% url 'apagar_usuario' %}">2. Apagar Usuário</a></li>
+            <li><a href="{% url 'cadastrar_usuario' %}">3. Cadastrar novo Usuário</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>

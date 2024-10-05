@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Abastecimento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef; /* Cor de fundo suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #a72828; 
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        label {
+            margin-top: 15px;
+            color: #333;
+            text-align: left;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #bd0707;  
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #a72828; 
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #bd0707;  
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+
+        /* Estilos para o spinner */
+        .loading svg polyline {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        }
+
+        .loading svg polyline#back {
+        fill: none;
+        stroke: #ff4d5033;
+        }
+
+        .loading svg polyline#front {
+        fill: none;
+        stroke: #ff4d4f;
+        stroke-dasharray: 48, 144;
+        stroke-dashoffset: 192;
+        animation: dash_682 1.4s linear infinite;
+        }
+
+        @keyframes dash_682 {
+        72.5% {
+            opacity: 0;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+        }
+
+        /* Control the visibility of the spinner */
+        #loading-spinner {
+        display: none; /* Hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 9999; /* Ensures it stays above all content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+    </style>
+
+    <script>
+        // Função para exibir o spinner
+        function showSpinner() {
+            document.getElementById("loading-spinner").style.display = "flex";
+        }
+
+        // Função para esconder o spinner
+        function hideSpinner() {
+            document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        // Adicionar eventos ao carregamento da página e formulários
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ao submeter formulários
+            const forms = document.querySelectorAll("form");
+            forms.forEach(form => {
+                form.addEventListener("submit", function() {
+                    showSpinner();  // Mostrar animação ao enviar formulários
+                });
+            });
+
+            // Ocultar o spinner quando a página carregar completamente
+            window.addEventListener("load", function() {
+                hideSpinner();  // Esconder animação após o carregamento
+            });
+        });
+    </script>
+
+</head>
+<body>
+
+    <div class="container">
+        <h2>Registrar Abastecimento para {{ veiculo.nome }} ({{ veiculo.placa }})</h2>
+        <form method="POST">
+            {% csrf_token %}
+        
+            <label for="data">Data:</label>
+            <input type="date" id="data" name="data" required>
+        
+            <label for="litros">Litros:</label>
+            <input type="number" step="0.01" id="litros" name="litros" required>
+        
+            <label for="quilometragem">Quilometragem Atual:</label>
+            <input type="number" step="0.01" id="quilometragem" name="quilometragem" required>
+        
+            <button type="submit">Registrar Abastecimento</button>
+        </form>
+
+        <!-- Carregando a animação -->
+        <div id="loading-spinner" class="loading">
+            <svg width="64px" height="48px">
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+            </svg>
+        </div>
+
+    </div>
+</body>
+</html>
