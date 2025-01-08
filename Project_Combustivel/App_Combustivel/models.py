@@ -51,13 +51,18 @@ class Usuario(AbstractBaseUser):
 
 
 class Veiculo(models.Model):
-    nome = models.CharField(max_length=100)
-    placa = models.CharField(max_length=10, unique=True)
+    equipamento = models.CharField(max_length=100, verbose_name="Equipamento")
+    ativo = models.CharField(max_length=50, unique=True, verbose_name="Ativo")
+    marca = models.CharField(max_length=50, verbose_name="Marca")
+    modelo = models.CharField(max_length=50, verbose_name="Modelo")
+    chassis = models.CharField(max_length=50, unique=True, verbose_name="Chassis")
+    placa = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Placa")
+    ano = models.PositiveIntegerField(verbose_name="Ano")
+    obra = models.CharField(max_length=100, verbose_name="Obra")
     media_prevista = models.FloatField()
-    
 
     def __str__(self):
-        return f"{self.nome} - {self.placa}"
+        return f"{self.equipamento} - {self.ativo}"
     
 
 class Abastecimento(models.Model):
@@ -66,3 +71,9 @@ class Abastecimento(models.Model):
     litros = models.FloatField()
     quilometragem = models.FloatField()
     consumo = models.FloatField(null=True, blank=True) # Consumo será calculado posteriormente
+
+class ConsumoLubrificante(models.Model):
+    veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=50) # Ex: motor, transmissão 
+    quantidade = models.FloatField()
+    data = models.DateField()

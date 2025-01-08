@@ -94,7 +94,7 @@
         <ul class="usuarios-list">
             {% for veiculo in veiculos %}
                 <li>
-                    {{ veiculo.nome }} ({{ veiculo.placa }})
+                    {{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.placa }})
                     <a class="remove-btn" href="{% url 'remover_veiculo' veiculo.id %}" onclick="return confirm('Tem certeza que deseja remover este veículo?');">Remover</a>
                 </li>
             {% empty %}

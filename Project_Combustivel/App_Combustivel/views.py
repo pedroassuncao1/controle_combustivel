@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Usuario, Veiculo, Abastecimento
+from .models import Usuario, Veiculo, Abastecimento, ConsumoLubrificante
+from django.template.loader import select_template
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from .forms import RegistroForm, FiltroDataForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
@@ -88,46 +89,51 @@ def login_view(request):
 
 @login_required(login_url='login')
 def cadastrar_veiculo(request):
-
     # Verificando se o usuário é 'admin'
     if request.user.tipo_usuario != 'admin':
-        return HttpResponseForbidden("Você não tem permissão para acessar esta página. ")
+        return HttpResponseForbidden("Você não tem permissão para acessar esta página.")
 
     if request.method == "POST":
-        nome = request.POST.get('nome').upper()
-        placa = request.POST.get("placa").upper()
+        equipamento = request.POST.get('equipamento').upper()
+        ativo = request.POST.get('ativo').upper()
+        marca = request.POST.get('marca').upper()
+        modelo = request.POST.get('modelo').upper()
+        chassis = request.POST.get('chassis').upper()
+        placa = request.POST.get('placa').upper()
+        ano = request.POST.get('ano')
+        obra = request.POST.get('obra').upper()
+        media_prevista = float(request.POST['media_prevista'])
 
-        # Verificando se o veículo já existe no banco de dados: 
-        if Veiculo.objects.filter(nome=nome).exists():
-            return HttpResponse("Veículo já cadastrado! <br> <a href="">Voltar</a>")
-        
-        elif Veiculo.objects.filter(placa=placa).exists():
-            return HttpResponse("Veículo já cadastrado! <br> <a href="">Voltar</a>")
+        # Verificando se o veículo já existe no banco de dados
+        if Veiculo.objects.filter(ativo=ativo).exists():
+            return HttpResponse("Veículo com este ativo já cadastrado! <br> <a href=''>Voltar</a>")
+        elif Veiculo.objects.filter(chassis=chassis).exists():
+            return HttpResponse("Veículo com este chassis já cadastrado! <br> <a href=''>Voltar</a>")
+        elif placa and Veiculo.objects.filter(placa=placa).exists():
+            return HttpResponse("Veículo com esta placa já cadastrado! <br> <a href=''>Voltar</a>")
 
-        if not nome or not placa:
+        # Validação de campos obrigatórios
+        if not (equipamento and ativo and marca and modelo and chassis and ano and obra):
             return render(request, "veiculos/cadastrar_veiculo.html", {
-                "error": "Nome e placa são obrigatórios."
+                "error": "Todos os campos são obrigatórios."
             })
 
-        try:
-            veiculo = Veiculo.objects.get(nome=nome, placa=placa)
-            # Se o veículo já existe, redireciona para o formulário de abastecimento
-            return render(request, "veiculos/form_abastecimento.html", {"veiculo": veiculo})
-        except Veiculo.DoesNotExist:
-            if "media_prevista" in request.POST:
-                media_prevista = request.POST.get("media_prevista")
-                Veiculo.objects.create(
-                    nome=nome,
-                    placa=placa,
-                    media_prevista=media_prevista
-                )
-                return HttpResponse("Veículo cadastrado com sucesso! Agora insira os dados de abastecimento.")
-            else:
-                return render(request, "veiculos/cadastrar_veiculo.html", {
-                    "error": "Veículo não encontrado. Por favor, preencha todos os campos."
-                })
+        # Criando o veículo no banco de dados
+        Veiculo.objects.create(
+            equipamento=equipamento,
+            ativo=ativo,
+            marca=marca,
+            modelo=modelo,
+            chassis=chassis,
+            placa=placa,
+            ano=ano,
+            obra=obra,
+            media_prevista=media_prevista
+        )
+        return HttpResponse("Veículo cadastrado com sucesso! <br> <a href=''>Voltar</a>")
 
     return render(request, "veiculos/cadastrar_veiculo.html")
+
 
 
 @login_required(login_url='login')
@@ -436,3 +442,117 @@ def apagar_usuario(request):
     else:
         messages.error(request, 'Você não tem permissão para apagar usuários.')
         
+
+@login_required(login_url='login')
+def detalhes_veiculo(request, veiculo_id):
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+
+    # Consumo de combustível
+    consumo_combustivel = Abastecimento.objects.filter(veiculo=veiculo).aggregate(total_consumo=Sum('litros'))['total_consumo'] or 0
+
+    # Consumo de lubrificantes por tipo
+    tipos_lubrificantes = ["Motor", "Transmissão", "Hidráulica", "Dif Dianteiro", "Dif Traseiro", "Direção"]
+    consumo_lubrificantes = {
+        tipo: ConsumoLubrificante.objects.filter(veiculo=veiculo, tipo=tipo).aggregate(total_consumo=Sum('quantidade'))['total_consumo'] or 0
+        for tipo in tipos_lubrificantes
+    }
+
+    context = {
+        'veiculo': veiculo,
+        'consumo_combustivel': consumo_combustivel,
+        'consumo_lubrificantes': consumo_lubrificantes,
+    }
+
+    # Nome do template dinâmico
+    template_name = f"veiculos/detalhes_veiculos/{id}.html"
+    
+    try:
+        # Procura o template específico baseado no ID
+        template = select_template([template_name])
+    except Exception:
+        # Se o template específico não for encontrado, usa o padrão
+        template_name = "veiculos/detalhes_veiculos.html"
+
+    return render(request, template_name, context)
+
+
+@login_required(login_url=login)
+def troca_oleo(request):
+    veiculos = Veiculo.objects.all()
+
+    if request.method == 'POST': 
+        veiculo_id = request.POST.get('veiculo')
+        data = request.POST.get('data')
+        tipo = request.POST.get('tipo')
+        quantidade = request.POST.get('quantidade')
+
+        try: 
+            veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+            quantidade = float(quantidade)
+
+            # Salva a troca de óleo 
+            ConsumoLubrificante.objects.create(
+                veiculo=veiculo,
+                data=data,
+                tipo=tipo,
+                quantidade=quantidade
+            )
+
+            messages.success(request, "Troca de óleo registrada com sucesso")
+            print("Troca de óleo registada com sucesso!")
+            return redirect('troca_oleo')
+        
+        except ValueError:
+            messages.error(request, "Quantidade inválida!")
+        except Exception as e:
+            messages.error(request, f"Ocorreu um erro: {e}")
+
+    context = {
+        'veiculos': veiculos,
+    }
+
+    return render(request, 'veiculos/troca_oleo.html', context)
+
+
+@login_required(login_url='login')
+def detalhes_consumo(request, veiculo_id, tipo=None):
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+
+    if tipo == "combustivel":
+        # Consumo de combustível
+        abastecimentos = Abastecimento.objects.filter(veiculo=veiculo)
+
+        # Criar lista de registros para exibição
+        registros = []
+        for abastecimento in abastecimentos:
+            km_l = None
+            if abastecimento.litros > 0:
+                km_l = abastecimento.quilometragem / abastecimento.litros
+            registros.append({
+                'data': abastecimento.data,
+                'litros': abastecimento.litros,
+                'quilometragem': abastecimento.quilometragem,
+                'km_l': km_l,
+            })
+
+        context = {
+            'veiculo': veiculo,
+            'registros': registros,
+            'tipo': 'Combustível',
+        }
+
+    elif tipo in ["Motor", "Transmissão", "Hidráulica", "Dif Dianteiro", "Dif Traseiro", "Direção"]:
+        # Consumo de lubrificante por tipo
+        registros = ConsumoLubrificante.objects.filter(veiculo=veiculo, tipo=tipo)
+
+        context = {
+            'veiculo': veiculo,
+            'registros': registros,
+            'tipo': tipo,
+        }
+
+    else:
+        # Caso o tipo seja inválido
+        return HttpResponse("Tipo de consumo inválido", status=400)
+
+    return render(request, 'veiculos/detalhes_consumo.html', context)

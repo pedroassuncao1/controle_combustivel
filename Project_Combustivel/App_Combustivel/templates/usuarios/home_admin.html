@@ -69,16 +69,18 @@ h1 {
     
             <!-- Botão para listar os veículos para que o usuário escolha qual veículo irá adicionar dados de abastecimento -->
             <li><a href="{% url 'listar_veiculos' %}">2. Cadastrar Abastecimento</a></li>
+
+            <li><a href="{% url 'troca_oleo' %}">3. Cadastrar Troca de Óleo</a></li>
         
             <!-- Botão para remover veículos existentes -->
-            <li><a href="{% url 'remover_veiculo_view' %}">3. Remover um veículo</a></li>
+            <li><a href="{% url 'remover_veiculo_view' %}">4. Remover um veículo</a></li>
 
             
-            <li><a href="{% url 'listar_veiculos_informacoes' %}">4. Exibir informações de um veículo</a></li>
+            <li><a href="{% url 'listar_veiculos_informacoes' %}">5. Exibir informações de um veículo</a></li>
 
-            <li><a href="{% url 'grafico_consumo' %}">5. Gráfico</a></li>
+            <li><a href="{% url 'grafico_consumo' %}">6. Gráfico</a></li>
             
-            <li><a href="{% url 'mais_opcoes' %}">6. Mais opções</a></li>
+            <li><a href="{% url 'mais_opcoes' %}">7. Mais opções</a></li>
             <li>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}

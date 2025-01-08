@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Troca de Óleo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef; /* Cor de fundo suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #a72828; 
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        label {
+            margin-top: 15px;
+            color: #333;
+            text-align: left;
+            display: block;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: #bd0707;  
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #a72828; 
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #bd0707;  
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <script>
+        // Função para exibir o spinner
+        function showSpinner() {
+            document.getElementById("loading-spinner").style.display = "flex";
+        }
+
+        // Função para esconder o spinner
+        function hideSpinner() {
+            document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        // Adicionar eventos ao carregamento da página e formulários
+        document.addEventListener("DOMContentLoaded", function() {
+            // Ao submeter formulários
+            const forms = document.querySelectorAll("form");
+            forms.forEach(form => {
+                form.addEventListener("submit", function() {
+                    showSpinner();  // Mostrar animação ao enviar formulários
+                });
+            });
+
+            // Ocultar o spinner quando a página carregar completamente
+            window.addEventListener("load", function() {
+                hideSpinner();  // Esconder animação após o carregamento
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Registrar Troca de Óleo</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="veiculo">Selecione o Veículo:</label>
+            <select name="veiculo" id="veiculo" required>
+                {% for veiculo in veiculos %}
+                    <option value="{{ veiculo.id }}">{{ veiculo.marca }} {{ veiculo.modelo }} - {{ veiculo.placa }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="data">Data:</label>
+            <input type="date" name="data" id="data" required>
+
+            <label for="tipo">Tipo de Óleo:</label>
+            <select name="tipo" id="tipo" required>
+                <option value="Motor">Motor</option>
+                <option value="Transmissão">Transmissão</option>
+                <option value="Hidráulica">Hidráulica</option>
+                <option value="Dif Dianteiro">Dif Dianteiro</option>
+                <option value="Dif Traseiro">Dif Traseiro</option>
+                <option value="Direção">Direção</option>
+            </select>
+
+            <label for="quantidade">Quantidade (litros):</label>
+            <input type="number" step="0.01" name="quantidade" id="quantidade" required>
+
+            <button type="submit">Registrar Troca</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Veículo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details-table th, .details-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .details-table th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+
+        .details-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .lubrificante-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .lubrificante-list li {
+            margin-bottom: 8px;
+        }
+
+        .lubrificante-list span {
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Detalhes do Veículo</h1>
+        </div>
+        <div class="content">
+            <h2>Informações Gerais</h2>
+            <table class="details-table">
+                <tr>
+                    <th>Equipamento</th>
+                    <td>{{ veiculo.equipamento }}</td>
+                </tr>
+                <tr>
+                    <th>Ativo</th>
+                    <td>{{ veiculo.ativo }}</td>
+                </tr>
+                <tr>
+                    <th>Marca</th>
+                    <td>{{ veiculo.marca }}</td>
+                </tr>
+                <tr>
+                    <th>Modelo</th>
+                    <td>{{ veiculo.modelo }}</td>
+                </tr>
+                <tr>
+                    <th>Chassis</th>
+                    <td>{{ veiculo.chassis }}</td>
+                </tr>
+                <tr>
+                    <th>Placa</th>
+                    <td>{{ veiculo.placa }}</td>
+                </tr>
+                <tr>
+                    <th>Ano</th>
+                    <td>{{ veiculo.ano }}</td>
+                </tr>
+                <tr>
+                    <th>Obra</th>
+                    <td>{{ veiculo.obra }}</td>
+                </tr>
+            </table>
+
+            <h3>Consumo de Combustível</h3>
+            <p>Total consumido: {{ consumo_combustivel }} litros</p>
+            <a href="{% url 'detalhes_consumo' veiculo.id 'combustivel' %}">Ver detalhes do consumo de combustível</a>
+
+            <h3>Consumo de Lubrificantes</h3>
+            <ul>
+                {% for tipo, quantidade in consumo_lubrificantes.items %}
+                    <li>
+                        {{ tipo }}: 
+                        {% if quantidade > 0 %}
+                            {{ quantidade }} litros 
+                            <a href="{% url 'detalhes_consumo' veiculo.id tipo %}">Ver detalhes</a>
+                        {% else %}
+                            Nenhum consumo registrado
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        <div class="footer">
+            <a href="{% url 'listar_veiculos_informacoes' %}">Voltar à lista de veículos</a>
+        </div>
+    </div>
+</body>
+</html>

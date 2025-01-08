@@ -1,0 +1,171 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes de Consumo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* Fundo suave */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        h3 {
+            margin-bottom: 20px;
+            color: #6c757d;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #a72828; /* Cor principal */
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        th {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        tbody tr:hover {
+            background-color: #ffe9e9; /* Realce ao passar o mouse */
+        }
+
+        td {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #a72828; /* Cor do botão */
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #bd0707; /* Hover do botão */
+        }
+
+        @media (max-width: 600px) {
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            a {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Detalhes de Consumo - {{ tipo }}</h1>
+<h2>Veículo: {{ veiculo.nome }} ({{ veiculo.placa }})</h2>
+
+{% if tipo == "Combustível" %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Quantidade Abastecida (L)</th>
+                <th>Quilometragem</th>
+                <th>Média (km/l)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.data }}</td>
+                    <td>{{ registro.litros }} L</td>
+                    <td>{{ registro.quilometragem }} km</td>
+                    <td>
+                        {% if registro.km_l %}
+                            {{ registro.km_l|floatformat:2 }} km/l
+                        {% else %}
+                            Não calculada
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.data }}</td>
+                    <td>{{ registro.quantidade }} L</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+    <a href="{% url 'detalhes_veiculo' veiculo.id %}">Voltar</a>
+</body>
+</html>
+{% endblock %}

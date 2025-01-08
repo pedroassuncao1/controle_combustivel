@@ -109,7 +109,7 @@
             {% for veiculo in veiculos %}
                 <li>
                     <a href="{% url 'cadastrar_abastecimento' veiculo.id %}">
-                        {{ veiculo.nome }} ({{ veiculo.placa }})
+                        {{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.placa }})
                     </a>
                 </li>
             {% endfor %}

@@ -59,20 +59,62 @@
             font-weight: bold; /* Deixa o texto mais forte */
             margin-top: 20px; /* Espaço acima da mensagem */
         }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .footer a {
+            color: #dc3545;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Selecione um Veículo</h1>
-        <ul>
-            {% for veiculo in veiculos %}
-                <li>
-                    <a href="{% url 'exibir_informacoes_veiculo' veiculo.id %}">{{ veiculo.nome }} ({{ veiculo.placa }})</a>
-                </li>
-            {% empty %}
-                <li class="no-vehicles">Nenhum veículo cadastrado.</li>
-            {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Equipamento</th>
+                    <th>Ativo</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Chassis</th>
+                    <th>Placa</th>
+                    <th>Ano</th>
+                    <th>Obra</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos %}
+                <tr>
+                    <td>{{ veiculo.equipamento }}</td>
+                    <td>
+                        <a href="{% url 'detalhes_veiculo' veiculo.id %}">{{ veiculo.ativo }}</a>
+                    </td>
+                    <td>{{ veiculo.marca }}</td>
+                    <td>{{ veiculo.modelo }}</td>
+                    <td>{{ veiculo.chassis }}</td>
+                    <td>{{ veiculo.placa }}</td>
+                    <td>{{ veiculo.ano }}</td>
+                    <td>{{ veiculo.obra }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+    <div class="footer">
+        <a href="{% url 'home' %}">Voltar à página inicial</a>
     </div>
 </body>
 </html>

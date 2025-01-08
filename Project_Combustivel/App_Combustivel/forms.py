@@ -1,7 +1,7 @@
 from django import forms
 from .models import Abastecimento 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Usuario
+from .models import Usuario, Veiculo
 from django.core.exceptions import ValidationError
 
 
@@ -93,3 +93,19 @@ class FiltroDataForm(forms.Form):
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Usuário')
     password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+
+
+class VeiculoForm(forms.ModelForm):
+    class Meta:
+        model = Veiculo
+        fields = ['equipamento', 'ativo', 'marca', 'modelo', 'chassis', 'placa', 'ano', 'obra']
+        labels = {
+            'equipamento': 'Equipamento',
+            'ativo': 'Ativo (Código)',
+            'marca': 'Marca',
+            'modelo': 'Modelo',
+            'chassis': 'Chassis',
+            'placa': 'Placa',
+            'ano': 'Ano',
+            'obra': 'Obra',
+        }

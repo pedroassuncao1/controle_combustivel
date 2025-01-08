@@ -24,6 +24,10 @@ urlpatterns = [
     path('trocar_senha/', views.TrocarSenhaView.as_view(), name='trocar_senha'),
     path('senha_trocada/', views.SenhaTrocadaComSucessoView.as_view(), name='senha_trocada_com_sucesso'),
     path('apagar_usuario', views.apagar_usuario, name='apagar_usuario'),
+    path('detalhes_veiculo/<int:veiculo_id>/', views.detalhes_veiculo, name='detalhes_veiculo'),
+    path('troca_oleo/', views.troca_oleo, name='troca_oleo'),
+    path('detalhes_consumo/<int:veiculo_id>/<str:tipo>/', views.detalhes_consumo, name='detalhes_consumo'),
+    
     
 ]
 
