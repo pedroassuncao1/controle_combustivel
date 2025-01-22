@@ -27,8 +27,10 @@ urlpatterns = [
     path('detalhes_veiculo/<int:veiculo_id>/', views.detalhes_veiculo, name='detalhes_veiculo'),
     path('troca_oleo/', views.troca_oleo, name='troca_oleo'),
     path('detalhes_consumo/<int:veiculo_id>/<str:tipo>/', views.detalhes_consumo, name='detalhes_consumo'),
-    
-    
+    path('veiculo/<int:veiculo_id>/dossie/', views.dossie_veiculo, name='dossie_veiculo'),
+    path('veiculo/<int:veiculo_id>/dossie/cadastrar/', views.cadastrar_dossie, name='cadastrar_dossie'),
+    path('relatorio_trocas_oleo/', views.relatorio_trocas_oleo, name='relatorio_trocas_oleo'),
+    path('editar-obra/<int:veiculo_id>/', views.editar_obra, name='editar_obra'),
 ]
 
 

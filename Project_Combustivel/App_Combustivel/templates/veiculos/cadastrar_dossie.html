@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Dossiê</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+    
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+    
+        h1 {
+            font-size: 20px;
+            color: #a72828;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+    
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+    
+        table th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+    
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+    
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #6c757d;
+        }
+    
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #a72828;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+    
+        .btn:hover {
+            background-color: #a72828;
+        }
+    
+        form {
+            margin-top: 10px;
+        }
+    
+        form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+    
+        form input, form select, form textarea, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 2px;
+            font-size: 14px;
+        }
+    
+        form button {
+            background-color: #a72828;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    
+        form button:hover {
+            background-color: #a72828;
+        }
+    
+        .back-link {
+            text-decoration: none;
+            color: #a72828;
+            font-size: 16px;
+        }
+    
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+    
+
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Cadastrar Manutenção para {{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.ativo }})</h1>
+    
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Salvar</button>
+        </form>
+    
+        <a class="back-link" href="{% url 'dossie_veiculo' veiculo.id %}">Voltar</a>
+    </div>
+    
+
+</body>
+</html>

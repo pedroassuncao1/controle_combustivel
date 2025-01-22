@@ -105,7 +105,9 @@
                     <td>{{ veiculo.chassis }}</td>
                     <td>{{ veiculo.placa }}</td>
                     <td>{{ veiculo.ano }}</td>
-                    <td>{{ veiculo.obra }}</td>
+                    <td>
+                        <a href="{% url 'editar_obra' veiculo.id %}">{{ veiculo.obra }}</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

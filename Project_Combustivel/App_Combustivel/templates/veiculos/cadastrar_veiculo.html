@@ -150,38 +150,64 @@
 </head>
 <body>
     <div class="container">
+    
         <h2>Cadastro de Veículo</h2>
         <form method="post">
             {% csrf_token %}
+            
             <label for="equipamento">Equipamento:</label>
             <input type="text" id="equipamento" name="equipamento" required><br>
-        
+            
             <label for="ativo">Ativo:</label>
             <input type="text" id="ativo" name="ativo" required><br>
-        
+            
             <label for="marca">Marca:</label>
             <input type="text" id="marca" name="marca" required><br>
-        
+            
             <label for="modelo">Modelo:</label>
             <input type="text" id="modelo" name="modelo" required><br>
-        
+            
             <label for="chassis">Chassis:</label>
             <input type="text" id="chassis" name="chassis" required><br>
-        
+            
             <label for="placa">Placa:</label>
             <input type="text" id="placa" name="placa"><br>
-        
+            
             <label for="ano">Ano:</label>
             <input type="number" id="ano" name="ano" required><br>
-        
+            
             <label for="obra">Obra:</label>
             <input type="text" id="obra" name="obra" required><br>
-
+            
             <label for="media_prevista">Média Prevista:</label>
             <input type="number" id="media_prevista" name="media_prevista"><br>
-        
+            
+            <h3>Estimativas de Troca de Óleo</h3>
+            
+            <label for="estimativa_troca_motor">Estimativa Troca Motor:</label>
+            <input type="number" id="estimativa_troca_motor" name="estimativa_troca_motor" required>
+
+            <label for="estimativa_troca_transmissao">Estimativa Troca Transmissão:</label>
+            <input type="number" id="estimativa_troca_transmissao" name="estimativa_troca_transmissao" required>
+
+            <label for="estimativa_troca_hidraulica">Estimativa Troca Hidráulica:</label>
+            <input type="number" id="estimativa_troca_hidraulica" name="estimativa_troca_hidraulica" required>
+
+            <label for="estimativa_troca_dif_dianteiro">Estimativa Troca Diferencial Dianteiro:</label>
+            <input type="number" id="estimativa_troca_dif_dianteiro" name="estimativa_troca_dif_dianteiro" required>
+
+            <label for="estimativa_troca_dif_traseiro">Estimativa Troca Diferencial Traseiro:</label>
+            <input type="number" id="estimativa_troca_dif_traseiro" name="estimativa_troca_dif_traseiro" required>
+
+            <label for="estimativa_troca_direcao">Estimativa Troca Direção:</label>
+            <input type="number" id="estimativa_troca_direcao" name="estimativa_troca_direcao" required>
+            
             <button type="submit">Cadastrar Veículo</button>
         </form>
+        
+        
+        
+        
         
         {% if error %}
             <p style="color: red;">{{ error }}</p>

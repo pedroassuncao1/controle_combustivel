@@ -61,8 +61,35 @@ class Veiculo(models.Model):
     obra = models.CharField(max_length=100, verbose_name="Obra")
     media_prevista = models.FloatField()
 
+
+    # Campos para salvar a última troca e estimativa de troca de óleo para cada tipo de óleo(Motor, Hidraulica, Diferencial...)
+
+    ultima_troca_motor = models.IntegerField(default=0)
+    estimativa_troca_motor = models.IntegerField(null=False, blank=False)
+
+    ultima_troca_transmissao = models.IntegerField(default=0)
+    estimativa_troca_transmissao = models.IntegerField(null=False, blank=False)
+
+    ultima_troca_hidraulica = models.IntegerField(default=0)
+    estimativa_troca_hidraulica = models.IntegerField(null=False, blank=False)
+
+    ultima_troca_dif_dianteiro = models.IntegerField(default=0)
+    estimativa_troca_dif_dianteiro = models.IntegerField(null=False, blank=False)
+
+    ultima_troca_dif_traseiro = models.IntegerField(default=0)
+    estimativa_troca_dif_traseiro = models.IntegerField(null=False, blank=False)
+
+    ultima_troca_direcao = models.IntegerField(default=0)
+    estimativa_troca_direcao = models.IntegerField(null=False, blank=False)
+
+
+    # RETIRAR O DEFAULT E EXIGIR QUE A ESTIMATIVA DE OLEO SEJA INSERIDA NO CADASTRAMENTO DO VEÍCULO 
+
+
+
     def __str__(self):
         return f"{self.equipamento} - {self.ativo}"
+
     
 
 class Abastecimento(models.Model):
@@ -74,6 +101,25 @@ class Abastecimento(models.Model):
 
 class ConsumoLubrificante(models.Model):
     veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=50) # Ex: motor, transmissão 
+    tipo = models.CharField(max_length=50)  # Ex: Motor, Transmissão
+    tipo_oleo = models.CharField(max_length=50)  # Ex: 15w40, 5w30
     quantidade = models.FloatField()
     data = models.DateField()
+    quilometragem = models.FloatField()
+
+
+
+class DossieManutencao(models.Model):
+    veiculo = models.ForeignKey('Veiculo', on_delete=models.CASCADE, related_name="dossies")
+    data_parada = models.DateField()
+    data_liberacao = models.DateField(null=True, blank=True)
+    horimetro_acumulado = models.IntegerField()
+    defeito_apresentado = models.CharField(max_length=255)
+    causa_falha = models.TextField()
+    servico_executado = models.TextField()
+    numero_nota_fiscal = models.CharField(max_length=255, null=True, blank=True)
+    numero_osi = models.CharField(max_length=255)
+    executado_por = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"Dossiê de {self.veiculo} - OSI {self.numero_osi}"

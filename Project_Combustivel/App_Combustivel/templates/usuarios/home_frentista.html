@@ -67,7 +67,8 @@ h1 {
         <ul class="menu">
             <li><a href="{% url 'listar_veiculos' %}">1. Cadastrar Abastecimento</a></li>
             <li><a href="{% url 'listar_veiculos_informacoes' %}">2. Exibir informações de um veículo</a></li>
-            <li><a href="{% url 'trocar_senha' %}">3. Trocar Senha</a></li>
+            <li><a href="{% url 'troca_oleo' %}">3. Cadastrar Troca de Óleo</a></li>
+            <li><a href="{% url 'trocar_senha' %}">4. Trocar Senha</a></li>
             <li>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}

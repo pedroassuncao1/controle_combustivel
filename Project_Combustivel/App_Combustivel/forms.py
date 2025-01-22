@@ -1,5 +1,5 @@
 from django import forms
-from .models import Abastecimento 
+from .models import Abastecimento, DossieManutencao
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Usuario, Veiculo
 from django.core.exceptions import ValidationError
@@ -83,8 +83,6 @@ class RegistroForm(UserCreationForm):
     
 
 
-
-
 class FiltroDataForm(forms.Form): 
     data_inicio = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label="Data Início")
     data_fim = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label="Data Fim")
@@ -98,7 +96,11 @@ class CustomAuthenticationForm(AuthenticationForm):
 class VeiculoForm(forms.ModelForm):
     class Meta:
         model = Veiculo
-        fields = ['equipamento', 'ativo', 'marca', 'modelo', 'chassis', 'placa', 'ano', 'obra']
+        fields = [
+            'equipamento', 'ativo', 'marca', 'modelo', 'chassis', 'placa', 'ano', 'obra', 'media_prevista',
+            'estimativa_troca_motor', 'estimativa_troca_transmissao', 'estimativa_troca_hidraulica', 'estimativa_troca_dif_traseiro', 'estimativa_troca_dif_dianteiro', 'estimativa_troca_direcao'
+            
+        ]
         labels = {
             'equipamento': 'Equipamento',
             'ativo': 'Ativo (Código)',
@@ -108,4 +110,20 @@ class VeiculoForm(forms.ModelForm):
             'placa': 'Placa',
             'ano': 'Ano',
             'obra': 'Obra',
+            'estimativa_troca_motor': 'estimativa_troca_motor',
+            
+        }
+
+
+class DossieForm(forms.ModelForm):
+    class Meta:
+        model = DossieManutencao
+        fields = [
+            'data_parada', 'data_liberacao', 'horimetro_acumulado',
+            'defeito_apresentado', 'causa_falha', 'servico_executado',
+            'numero_nota_fiscal', 'numero_osi', 'executado_por'
+        ]
+        widgets = {
+            'data_parada': forms.DateInput(attrs={'type': 'date'}),
+            'data_liberacao': forms.DateInput(attrs={'type': 'date'}),
         }

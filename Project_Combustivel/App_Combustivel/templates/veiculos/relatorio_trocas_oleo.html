@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Trocas de Óleo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #a72828;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed; /* Ajusta o layout para alinhamento fixo */
+        }
+
+        table th, table td {
+            text-align: center; /* Alinha o conteúdo ao centro */
+            padding: 10px 15px; /* Espaçamento interno */
+            border: 1px solid #dee2e6;
+            word-wrap: break-word; /* Quebra palavras longas */
+        }
+
+        table th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        td ul {
+            padding-left: 20px;
+            margin: 0;
+            list-style-type: disc;
+        }
+
+        td ul li {
+            margin-bottom: 5px; /* Espaçamento entre os itens da lista */
+        }
+
+        td[rowspan] {
+            vertical-align: middle; /* Alinha verticalmente no centro */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Relatório de Trocas de Óleo</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Tipo de Óleo</th>
+                    <th>Última Troca</th>
+                    <th>Estimativa Próxima Troca</th>
+                    <th>Histórico de Consumo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for relatorio in relatorios %}
+                <tr>
+                    <td rowspan="3">{{ relatorio.veiculo.equipamento }} ({{ relatorio.veiculo.placa }})</td>
+                    <td>Motor</td>
+                    <td>{{ relatorio.motor.ultima_troca }}</td>
+                    <td>{{ relatorio.motor.estimativa }}</td>
+                    <td rowspan="3">
+                        <ul>
+                            {% for consumo in relatorio.historico %}
+                            <li>{{ consumo.tipo }}: {{ consumo.quantidade }}L em {{ consumo.data }}</li>
+                            {% empty %}
+                            <li>Sem consumo registrado.</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Transmissão</td>
+                    <td>{{ relatorio.transmissao.ultima_troca }}</td>
+                    <td>{{ relatorio.transmissao.estimativa }}</td>
+                </tr>
+                <tr>
+                    <td>Hidráulica</td>
+                    <td>{{ relatorio.hidraulica.ultima_troca }}</td>
+                    <td>{{ relatorio.hidraulica.estimativa }}</td>
+                </tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

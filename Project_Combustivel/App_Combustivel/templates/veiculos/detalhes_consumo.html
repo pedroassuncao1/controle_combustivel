@@ -116,10 +116,34 @@
     </style>
 </head>
 <body>
-    <h1>Detalhes de Consumo - {{ tipo }}</h1>
-<h2>Veículo: {{ veiculo.nome }} ({{ veiculo.placa }})</h2>
 
-{% if tipo == "Combustível" %}
+    <div style="margin-bottom: 20px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; margin: 0 auto;">
+        <form method="get" action="" style="display: flex; flex-wrap: nowrap; align-items: center; gap: 15px;">
+            <div style="flex: 1; min-width: 200px;">
+                <label for="data_inicial" style="font-size: 14px; font-weight: bold; margin-right: 5px; color: #333;">Data Inicial:</label>
+                <input type="date" id="data_inicial" name="data_inicial" value="{{ request.GET.data_inicial|default_if_none:'' }}" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 100%;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label for="data_final" style="font-size: 14px; font-weight: bold; margin-right: 5px; color: #333;">Data Final:</label>
+                <input type="date" id="data_final" name="data_final" value="{{ request.GET.data_final|default_if_none:'' }}" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 100%;">
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button type="submit" style="padding: 10px 20px; background-color: #a72828; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; width: 150px;">
+                    Filtrar
+                </button>
+                <a href="{% url 'detalhes_consumo' veiculo.id tipo %}" style="padding: 10px 20px; background-color: #a72828; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; height: 40px; display: flex; align-items: center; justify-content: center; text-align: center; width: 150px;">
+                    Limpar Filtro
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    
+    <h1>Detalhes de Consumo - {{ tipo }}</h1>
+    
+<h2>Veículo: {{ veiculo.modelo }} ({{ veiculo.placa }})</h2>
+
+{% if tipo == "combustivel" %}
     <table border="1">
         <thead>
             <tr>
@@ -130,18 +154,21 @@
             </tr>
         </thead>
         <tbody>
+
+                
             {% for registro in registros %}
                 <tr>
                     <td>{{ registro.data }}</td>
                     <td>{{ registro.litros }} L</td>
                     <td>{{ registro.quilometragem }} km</td>
                     <td>
-                        {% if registro.km_l %}
-                            {{ registro.km_l|floatformat:2 }} km/l
+                        {% if registro.consumo %}
+                            {{ registro.consumo|floatformat:2 }} km/l
                         {% else %}
-                            Não calculada
+                            Não calculado
                         {% endif %}
                     </td>
+                    
                 </tr>
             {% endfor %}
         </tbody>
@@ -151,7 +178,9 @@
         <thead>
             <tr>
                 <th>Data</th>
-                <th>Quantidade</th>
+                <th>Quantidade (L)</th>
+                <th>Quilometragem</th>
+                <th>Tipo de Óleo</th>
             </tr>
         </thead>
         <tbody>
@@ -159,10 +188,14 @@
                 <tr>
                     <td>{{ registro.data }}</td>
                     <td>{{ registro.quantidade }} L</td>
+                    <td>{{ registro.quilometragem }} km</td>
+                    <td>{{ registro.tipo_oleo }}</td>
+
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
 {% endif %}
 
     <a href="{% url 'detalhes_veiculo' veiculo.id %}">Voltar</a>

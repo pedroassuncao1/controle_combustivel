@@ -23,7 +23,7 @@
         }
 
         .header {
-            background-color: #007bff;
+            background-color: #a72828;
             color: #fff;
             padding: 20px;
             text-align: center;
@@ -40,7 +40,7 @@
 
         .content h2 {
             margin-top: 0;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #a72828;
             padding-bottom: 10px;
             font-size: 20px;
         }
@@ -88,14 +88,95 @@
         }
 
         .footer a {
-            color: #007bff;
+            color: #a72828;
             text-decoration: none;
         }
 
         .footer a:hover {
             text-decoration: underline;
         }
-    </style>
+
+        /* Container geral do relatório */
+        .report-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        /* Título do relatório */
+        .report-title {
+            text-align: center;
+            color: #a72828;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Informações adicionais */
+        .report-info {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* Estilo para tabelas */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: auto;
+        }
+
+        .report-table th, 
+        .report-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .report-table th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .report-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .report-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Status personalizado */
+        .status {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .status-atrasado {
+            background-color: red;
+            color: white;
+        }
+
+        .status-na_hora {
+            background-color: yellow;
+            color: black;
+        }
+
+        .status-regular {
+            background-color: green;
+            color: white;
+        }
+
+        .status-ok{
+            background-color: green;
+            color: white;
+        }
+
+            </style>
 </head>
 <body>
     <div class="container">
@@ -163,5 +244,34 @@
             <a href="{% url 'listar_veiculos_informacoes' %}">Voltar à lista de veículos</a>
         </div>
     </div>
+
+    <div class="report-container">
+        <h2 class="report-title">Relatório de Troca de Óleo</h2>
+        <p class="report-info"><strong>Km Atual:</strong> {{ km_atual|default:"Não registrado" }}</p>
+    
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Tipo de Óleo</th>
+                    <th>Última Troca</th>
+                    <th>Estimativa Próxima Troca</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tipo, dados in trocas.items %}
+                    <tr>
+                        <td>{{ tipo|capfirst }}</td>
+                        <td>{{ dados.ultima_troca }}</td>
+                        <td>{{ dados.ultima_troca|add:dados.estimativa }}</td>
+                        <td class="status status-{{ dados.status }}">
+                            {{ dados.status|capfirst }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
 </body>
 </html>
