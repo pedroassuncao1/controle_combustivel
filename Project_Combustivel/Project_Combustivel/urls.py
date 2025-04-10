@@ -31,6 +31,8 @@ urlpatterns = [
     path('veiculo/<int:veiculo_id>/dossie/cadastrar/', views.cadastrar_dossie, name='cadastrar_dossie'),
     path('relatorio_trocas_oleo/', views.relatorio_trocas_oleo, name='relatorio_trocas_oleo'),
     path('editar-obra/<int:veiculo_id>/', views.editar_obra, name='editar_obra'),
+    path('registrar_quebra_quilometragem/<int:veiculo_id>/', views.registrar_quebra_quilometragem, name='registrar_quebra_quilometragem'),
+    
 ]
 
 

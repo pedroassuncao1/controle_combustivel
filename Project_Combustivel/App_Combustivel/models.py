@@ -60,6 +60,12 @@ class Veiculo(models.Model):
     ano = models.PositiveIntegerField(verbose_name="Ano")
     obra = models.CharField(max_length=100, verbose_name="Obra")
     media_prevista = models.FloatField()
+    quilometragem_total = models.FloatField(default=0) # Quilometragem total acumulada
+    tipo_consumo = models.CharField(
+        max_length=20,
+        choices=[("quilometragem", "Quilometragem"), ("horimetro", "Horímetro")],
+        default="quilometragem"
+    ) 
 
 
     # Campos para salvar a última troca e estimativa de troca de óleo para cada tipo de óleo(Motor, Hidraulica, Diferencial...)

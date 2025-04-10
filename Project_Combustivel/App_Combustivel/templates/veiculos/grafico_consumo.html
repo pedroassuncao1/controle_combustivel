@@ -223,7 +223,8 @@
         <!-- Exibir informações de consumo por veículo -->
         {% for consumo in consumo_veiculos %}
         <div class="vehicle-info">
-            <span>Veículo:</span> {{ consumo.veiculo.nome }} <br>
+            <span>Modelo: {{ consumo.veiculo.modelo }}</span> <br>
+            <span>Ativo:</span> {{ consumo.veiculo.ativo }} <br>
             <span>Placa:</span> {{ consumo.veiculo.placa }} <br>
             <span>Total de combustível consumido:</span> {{ consumo.litros }} litros
         </div>

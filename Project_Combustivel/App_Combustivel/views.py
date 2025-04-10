@@ -111,6 +111,7 @@ def cadastrar_veiculo(request):
         ano = request.POST.get('ano')
         obra = request.POST.get('obra').upper()
         media_prevista = float(request.POST['media_prevista'])
+        tipo_consumo = request.POST.get("tipo_consumo")
 
         # Capturando os campos de estimativa
         estimativa_troca_motor = request.POST.get("estimativa_troca_motor")
@@ -177,6 +178,7 @@ def cadastrar_veiculo(request):
             estimativa_troca_dif_dianteiro=estimativa_troca_dif_dianteiro,
             estimativa_troca_dif_traseiro=estimativa_troca_dif_traseiro,
             estimativa_troca_direcao=estimativa_troca_direcao,
+            tipo_consumo=tipo_consumo,
         )
         print("Veículo cadastrado com sucesso!")
         return HttpResponse("Veículo cadastrado com sucesso! <br> <a href=''>Voltar</a>")
@@ -189,48 +191,54 @@ def cadastrar_veiculo(request):
 
 @login_required(login_url='login')
 def cadastrar_abastecimento(request, veiculo_id):
-    # Verifica se o veículo existe
     veiculo = get_object_or_404(Veiculo, id=veiculo_id)
     
+    def atualizar_km_total(km_atual, km_anterior, km_total_acumulado):
+        if km_atual < km_anterior:  # Verifica quebra de quilometragem
+            km_total_acumulado += km_atual  # Soma o km atual ao total acumulado
+        else:
+            km_total_acumulado += (km_atual - km_anterior)  # Soma a diferença normalmente
+
+        return km_total_acumulado
+
     if request.method == "POST":
         # Obtendo dados do formulário
         data = request.POST.get("data")
         litros = request.POST.get("litros")
         quilometragem_atual = int(request.POST.get("quilometragem"))
 
-        # Lógica de alerta para troca de óleo
-        tipos_oleos = [
-            ("Motor", veiculo.ultima_troca_motor, veiculo.estimativa_troca_motor),
-            ("Transmissão", veiculo.ultima_troca_transmissao, veiculo.estimativa_troca_transmissao),
-            ("Hidráulica", veiculo.ultima_troca_hidraulica, veiculo.estimativa_troca_hidraulica),
-            ("Dif Dianteiro", veiculo.ultima_troca_dif_dianteiro, veiculo.estimativa_troca_dif_dianteiro),
-            ("Dif Traseiro", veiculo.ultima_troca_dif_traseiro, veiculo.estimativa_troca_dif_traseiro),
-            ("Direção", veiculo.ultima_troca_direcao, veiculo.estimativa_troca_direcao),
-        ]
-
-        # for tipo, ultima_troca, estimativa in tipos_oleos:
-
-        #     if ultima_troca == 0: 
-        #         # Ignorar se não houver registro da ultima troca de oleo 
-        #         continue 
-
-        #     limite_alerta = ultima_troca + estimativa - (estimativa * 0.1)  # 10% abaixo do limite
-        #     if quilometragem_atual >= ultima_troca + estimativa:
-        #         # Enviar alerta de risco
-        #         enviar_email_alerta(veiculo, f"RISCO: Troca de óleo atrasada ({tipo})!", quilometragem_atual)
-        #     elif quilometragem_atual >= limite_alerta:
-        #         # Enviar alerta de proximidade
-        #         enviar_email_alerta(veiculo, f"ALERTA: Próxima da troca de óleo ({tipo}).", quilometragem_atual)
-
         # Obtendo o último abastecimento para calcular o consumo
         ultimo_abastecimento = Abastecimento.objects.filter(veiculo=veiculo).last()
 
         if ultimo_abastecimento:
             km_anterior = ultimo_abastecimento.quilometragem
-            km_percorridos = quilometragem_atual - km_anterior
+            km_total_acumulado = veiculo.quilometragem_total
 
-            # Calcula o consumo
-            consumo = km_percorridos / float(litros)
+            # Atualiza o km total acumulado considerando possíveis quebras
+            quilometragem_total = atualizar_km_total(
+                quilometragem_atual,
+                km_anterior,
+                km_total_acumulado
+            )
+
+            # Calcula o consumo com base no tipo de controle
+            if veiculo.tipo_consumo == "Quilometragem":
+                km_percorridos = quilometragem_total - km_anterior
+                consumo = km_percorridos / float(litros)  # Consumo em km/l
+            elif veiculo.tipo_consumo == "horimetro":  # Caso seja "Horímetro"
+                km_percorridos = quilometragem_atual - km_anterior
+                # Obtendo o último abastecimento do veículo
+                ultimo_abastecimento = Abastecimento.objects.filter(veiculo=veiculo).order_by('-data').first()
+
+                if ultimo_abastecimento:
+                    litros_anteriores = ultimo_abastecimento.litros
+
+                print(litros, km_percorridos, km_anterior, litros_anteriores)
+                consumo = int(litros_anteriores) / int(km_percorridos)  # Consumo em L/h
+
+                
+
+
 
             # Atualiza o último abastecimento com o consumo calculado
             ultimo_abastecimento.consumo = consumo
@@ -246,9 +254,19 @@ def cadastrar_abastecimento(request, veiculo_id):
                 quilometragem=quilometragem_atual,
             )
 
+            # Atualiza a quilometragem total e salva o veículo
+            veiculo.quilometragem_total = quilometragem_total
+            veiculo.save()
+
+            # Ajusta a mensagem com base no tipo de controle
+            if veiculo.tipo_consumo == "Quilometragem":
+                unidade = "km/l"
+            else:
+                unidade = "L/h"
+
             # Retorna o consumo calculado ao usuário
             return render(request, "veiculos/resultado.html", {
-                "message": f"Abastecimento registrado! O consumo do último abastecimento foi de {consumo:.2f} km/l."
+                "message": f"Abastecimento registrado! O consumo do último abastecimento foi de {consumo:.2f} {unidade}. Quilometragem total acumulada: {quilometragem_total:.2f}."
             })
 
         else:
@@ -260,11 +278,16 @@ def cadastrar_abastecimento(request, veiculo_id):
                 quilometragem=quilometragem_atual,
             )
 
+            # Define o km total acumulado no primeiro abastecimento
+            veiculo.quilometragem_total = quilometragem_atual
+            veiculo.save()
+
             return render(request, "veiculos/resultado.html", {
-                "message": "Primeiro abastecimento registrado! O consumo será calculado no próximo registro."
+                "message": f"Primeiro abastecimento registrado! Quilometragem total acumulada: {quilometragem_atual:.2f} km."
             })
 
     return render(request, 'veiculos/form_abastecimento.html', {'veiculo': veiculo})
+
 
 
 # def enviar_email_alerta(veiculo, assunto, quilometragem_atual):
@@ -459,13 +482,13 @@ def grafico_consumo(request):
         })
 
     # Criar o gráfico usando matplotlib
-    veiculo_nomes = [consumo['veiculo'].nome for consumo in consumo_veiculos]
+    veiculo_ativos = [consumo['veiculo'].ativo for consumo in consumo_veiculos]
     combustivel_consumido = [consumo['litros'] for consumo in consumo_veiculos]
 
     # Configurar o gráfico
     fig, ax = plt.subplots()
-    ax.bar(veiculo_nomes, combustivel_consumido, color='skyblue')
-    ax.set_xlabel('Veículos')
+    ax.bar(veiculo_ativos, combustivel_consumido, color='skyblue')
+    ax.set_xlabel('Veículos (Ativo)')
     ax.set_ylabel(f'Combustível Consumido (litros)')
     ax.set_title('Consumo de Combustível por Veículo')
 
@@ -553,9 +576,8 @@ def detalhes_veiculo(request, veiculo_id):
         for tipo in tipos_lubrificantes
     }
     
-    # Obter último abastecimento
-    ultimo_abastecimento = Abastecimento.objects.filter(veiculo=veiculo).order_by('-data').first()
-    km_atual = ultimo_abastecimento.quilometragem if ultimo_abastecimento else None
+
+    km_atual = veiculo.quilometragem_total
 
     # Dados de trocas
     trocas = {
@@ -615,7 +637,7 @@ def get_status(km_atual, ultima_troca, estimativa):
         return 'indefinido'  # Sem dados para calcular
     if km_atual >= ultima_troca + estimativa:
         return 'atrasado'  # Vermelho
-    if km_atual >= (ultima_troca + (estimativa * 0.1)):  # Margem de 500 km
+    if km_atual >= (ultima_troca + (estimativa * 0.9)):  # Margem de 500 km
         return 'na_hora'  # Amarelo
     
     return 'ok'  # Verde
@@ -662,8 +684,33 @@ def troca_oleo(request):
                 veiculo.ultima_troca_motor = km_atual
                 veiculo.save()  # Salva as alterações no banco de dados
 
+            elif tipo == 'Transmissão':
+                veiculo.ultima_troca_transmissao = km_atual
+                veiculo.save()
+
+            elif tipo == 'Hidráulica':
+                veiculo.ultima_troca_hidraulica = km_atual
+                veiculo.save()
+
+            elif tipo == 'Dif Dianteiro':
+                veiculo.ultima_troca_dif_dianteiro = km_atual
+                veiculo.save()
+
+            elif tipo == 'Dif Traseiro':
+                veiculo.ultima_troca_dif_traseiro = km_atual
+                veiculo.save()
+
+            elif tipo == 'Direção':
+                veiculo.ultima_troca_direcao = km_atual
+                veiculo.save()
+
+            else:
+                return HttpResponse("Tipo não existente <br> <a href=''>Voltar</a>")
+            
+
             messages.success(request, "Troca de óleo registrada com sucesso!")
             print("Troca de óleo registrada com sucesso!")
+            return HttpResponse("Troca de óleo registrada com sucesso! <br> <a href=''>Voltar</a>")
             return redirect('troca_oleo')
         
         except ValueError:
@@ -700,6 +747,7 @@ def detalhes_consumo(request, veiculo_id, tipo=None):
         if data_inicial and data_final:
             abastecimentos = abastecimentos.filter(
                 Q(data__gte=data_inicial) & Q(data__lte=data_final)
+
             )
 
         # Criar lista de registros para exibição
@@ -749,6 +797,9 @@ def detalhes_consumo(request, veiculo_id, tipo=None):
     else:
         # Caso o tipo seja inválido
         return HttpResponse("Tipo de consumo inválido", status=400)
+    
+    km_total_acumulado = veiculo.quilometragem_total
+    print(km_total_acumulado)
 
     return render(request, 'veiculos/detalhes_consumo.html', context)
 
@@ -820,3 +871,16 @@ def editar_obra(request, veiculo_id):
         'veiculo': veiculo,
     }
     return render(request, 'veiculos/editar_obra.html', context)
+
+def registrar_quebra_quilometragem(request, veiculo_id):
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    
+    # Atualiza a quilometragem total com os 3 km de fábrica
+    veiculo.quilometragem_total += 3
+    veiculo.save()
+
+    # Mensagem de sucesso
+    messages.success(request, f"Quebra da quilometragem registrada! Quilometragem total atualizada para {veiculo.quilometragem_total:.2f}.")
+    print(f"Quebra da quilometragem registrada! Quilometragem total atualizada para {veiculo.quilometragem_total:.2f}.")
+    return redirect('detalhes_veiculo', veiculo_id=veiculo.id)
+
